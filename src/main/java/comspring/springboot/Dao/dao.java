@@ -25,21 +25,15 @@ public class dao {
         return jdbcTemplate.update(sql,username,email,password);
     }
 
-    // @Override
-    // public List<model> userdata(String data) {
+    public String verifyLogin(String username){
+    try{
 
-    //     String sql = "select password from users where username=?";
-    //     return jdbcTemplate.query((sql),(rs, rownum)->{
-    //         return new model(rs.getString("username"),rs.getString("email"),rs.getString("password"))
-    //     });
-    // }
-    // @Override
-    // public List<UserSkillsFromDB> getAllSkills() {
-
-    //     String sql = "select * from skill";
-
-    //     return jdbcTemplate.query(sql, (rs, rownum) -> {
-    //         return new UserSkillsFromDB(rs.getInt("id"), rs.getInt("skill_type_lid"), rs.getString("skill_name"));
-    //     });
-    // }
-}
+        String sql = "select password from users where username =?";
+        String password = jdbcTemplate.queryForObject(sql,String.class, username);
+        return password;
+        }
+        catch(Exception e){
+        return e.getMessage();
+        }
+        }
+    }

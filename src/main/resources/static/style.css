@@ -110,6 +110,7 @@ nav #icon{
 
 section{
     background: url(photo.jpeg) no-repeat;
-    background-size: cover;
     height: calc(100vh - 80px);
+    background-size: cover;
+    background-position: center;
 }

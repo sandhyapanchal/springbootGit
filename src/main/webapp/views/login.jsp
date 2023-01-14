@@ -49,9 +49,10 @@
                     contentType: false,                                        
                     success: function (response) {                                           
                         
-                      console.log("response"+ obj.username) ;              
+                      console.log("response"+ response) ;              
                             console.log("hiiiiiiiiiiii")
-                            // alert("Register Successfully");
+                            alert("Login Successfully");
+                            location.href = '/home';
                       
                         
                     },
