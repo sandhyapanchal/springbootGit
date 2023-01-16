@@ -49,6 +49,10 @@ public class controller {
         return "register";
     }     
     
+    @GetMapping("/resetPassword")
+    public String resetPassword(){
+        return "resetPassword";
+    } 
    
     @PostMapping(value = "/insertregister")
     public String register (@RequestBody String data)
