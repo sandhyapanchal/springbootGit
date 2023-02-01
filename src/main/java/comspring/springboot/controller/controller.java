@@ -1,9 +1,6 @@
 package comspring.springboot.controller;
 
-
-
-
-
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import comspring.springboot.Dao.dao;
 
 import comspring.springboot.Service.passwordhashService;
+import comspring.springboot.Service.Userservice;
 
 
 
@@ -32,7 +30,13 @@ public class controller {
     dao dao;
 
     @Autowired
+    Userservice userservice;
+
+    @Autowired
     passwordhashService passwordhashService;
+
+    @Autowired
+    HttpSession httpSession;
    
     @GetMapping("/home")
     public String home(){
@@ -85,7 +89,33 @@ public class controller {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("login Error");
             
         }
-    
+
+
+        @PostMapping("/send-otp")
+        @ResponseBody
+        public String  verifyEmail(@RequestBody String data){
+
+            System.out.println("INSIDE ::::::::::::::");
+            System.out.println("Email ::::::::::::::" + data);
+            
+        JSONObject json = new JSONObject(data);
+        String emailValue = json.getString("email");
+        System.out.println("Json>>>>>"+emailValue);
+        int id = dao.resetPassword(data);
+        if(id != 0)
+        { 
+            System.out.println("id>>"+id);     
+        int otp = (int) Math.floor(100000 + Math.random() * 900000);
+        System.out.println("otp>>>"+otp);
+        httpSession.setAttribute("otp", otp);
+        int otpFromSession = (int)httpSession.getAttribute("otp");  
+        System.out.println("otpsession>>"+otpFromSession);
+         userservice.sendEmail("Your Otp for Email Verification is: " + otp, emailValue, 3);
+         return "success";
+        }
+        System.out.println("null>>");
+         return "/login";
+        }
     }
         
  

@@ -14,7 +14,7 @@
       <h2>Reset Password</h2>
       <form method="post">
         <div class="txt_field"  id="email">
-          <input type="text" required>
+          <input type="text" id="emailid" name="emailid" required>
           <span></span>
           <label>Enter Your Email</label>
         </div>
@@ -43,11 +43,36 @@
 
 
     <script>
-        document.getElementById('sendotp').addEventListener('click',function(){
+        document.getElementById('sendotp').addEventListener('click',function(e){
             console.log("Button Clicked");
-            // document.getElementById('main-loader').classList.add('d-none');
-            document.getElementById('email').classList.remove('d-none');
-            document.getElementById('password1').classList.remove('d-none');
+            let email_value = document.querySelector('#emailid').value;
+            let email={email: email_value};
+            
+            
+        e.preventDefault();
+        console.log("register>>>",email)
+        
+        $.ajax({                    
+                    url: '/send-otp',
+                    type: 'POST',
+                    data: JSON.stringify(email) ,
+                    contentType: false,                                        
+                    success: function (response) {                                                                   
+                        
+            document.getElementById('email').classList.add('d-none');
+            document.getElementById('token').classList.remove('d-none');            
+            document.getElementById('password1').classList.remove('d-none');            
+            document.getElementById('password2').classList.remove('d-none');
+                     
+                      
+                        
+                    },
+                    error: function (error) {
+						        console.log("Error>>>>>>>>");
+                    alert("Something went wrong");
+                    }
+                  })
+
         })
     </script>
  
