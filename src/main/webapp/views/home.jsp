@@ -19,7 +19,7 @@
 </style>
 <body>
   
-    <h1>Welcome To Nmims World</h1>
+    <h1>Welcome To Nmims </h1>
     <h2>Total Number of Registered Users are: <b id = "usercount"></b></h2>
 
     <button type="submit" id="details"><h3>View Users</h3></button>
