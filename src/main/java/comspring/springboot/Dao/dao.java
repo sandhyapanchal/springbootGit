@@ -1,6 +1,5 @@
 package comspring.springboot.Dao;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -19,50 +18,60 @@ public class dao {
     @Autowired
     HttpSession httpSession;
 
-    public int insert (String data){
+    public int insertMethod(String data) {
+
         JSONObject json = new JSONObject(data);
-        String username = json.getString("username");
-        String email = json.getString("email");
+        String fname = json.getString("fname");
+        String lname = json.getString("lname");
         String password = json.getString("password");
-        System.out.println(username+email+password);
-        String sql ="insert into users(username,email,password) values (?,?,?)";
-        System.out.println("jdbc>>>>>>>>>>>>"+jdbcTemplate);
-        return jdbcTemplate.update(sql,username,email,password);
+        String email = json.getString("email");
+        String mobile = json.getString("mobile");
+
+        String sql = "insert into users(fname,lname,password,email,mobile) values (?,?,?,?,?)";
+        System.out.println("jdbc>>>>>>>>>>>>" + jdbcTemplate);
+        // System.out.println("Count" + json);
+        return jdbcTemplate.update(sql, fname, lname, password, email, mobile);
+
     }
 
-    public String verifyLogin(String username){
-    try{
+    public List<Map<String, Object>> details(String email) {
+        System.out.println("email>>" + email);
+        String sql = "select * from users where email =?";
+        List<Map<String, Object>> details = jdbcTemplate.queryForList(sql, email);
+        return details;
+    }
 
-        String sql = "select password from users where username =?";
-        String password = jdbcTemplate.queryForObject(sql,String.class, username);
+    public String verifyLogin(String email) {
+
+        String sql = "select password from users where email =?";
+        String password = jdbcTemplate.queryForObject(sql, String.class, email);
         return password;
-        }
-        catch(Exception e){
-        return e.getMessage();
-        }
-        }
-
-
-    public int resetPassword(String data) {
-        System.out.println("Dao>>>>>"+data);
-        
-        JSONObject json = new JSONObject(data);
-        String emailValue = json.getString("email");
-        System.out.println("Json>>>>>"+emailValue);
-        String sql = "select id from users where email = ?";
-        int id = 0;
-        try {
-            id = (int) jdbcTemplate.queryForObject(sql, Integer.class, emailValue);
-        } catch (Exception e) {
-            return 0;
-        }
-        if (id != 0) {
-            int tokenGenerated = (int) Math.floor(100000 + Math.random() * 900000);
-            httpSession.setAttribute("token", tokenGenerated);
-            httpSession.setAttribute("email", emailValue);
-            return id;
-        }
-        return 0;
 
     }
+
+    public String getCount() {
+        String sql = "select count(*) from users";
+        String count = jdbcTemplate.queryForObject(sql, String.class);
+        return count;
     }
+
+    public List<Map<String, Object>> allDetails() {
+
+        String sql = "select * from users";
+        List<Map<String, Object>> allDetails = jdbcTemplate.queryForList(sql);
+        return allDetails;
+    }
+
+    // Active & Deactive
+    public int setDeactive(String email) {
+        String sql = "update users set enable ='N' where email=?";
+        int setDeactive = jdbcTemplate.update(sql, email);
+        return setDeactive;
+    }
+
+    public int setActive(String email) {
+        String sql = "update users set enable ='Y' where email=?";
+        int setActive = jdbcTemplate.update(sql, email);
+        return setActive;
+    }
+}

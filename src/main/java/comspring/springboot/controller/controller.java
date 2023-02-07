@@ -1,5 +1,8 @@
 package comspring.springboot.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
@@ -14,15 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import comspring.springboot.Dao.dao;
 
-import comspring.springboot.Service.passwordhashService;
-import comspring.springboot.Service.Userservice;
-
-
-
-
-
-
-
 @Controller
 public class controller {
 
@@ -30,140 +24,117 @@ public class controller {
     dao dao;
 
     @Autowired
-    Userservice userservice;
-
-    @Autowired
-    passwordhashService passwordhashService;
-
-    @Autowired
     HttpSession httpSession;
-   
+
     @GetMapping("/home")
-    public String home(){
+    public String home() {
         return "home";
     }
 
-    @GetMapping("/login")
-    public String login(){
-        return "login";
+    @ResponseBody
+    @GetMapping(value = "/details")
+    public List<Map<String, Object>> details() {
+        String email = (String) httpSession.getAttribute("email");
+        System.out.println("emailcontroller>>" + email);
+        List<Map<String, Object>> details = dao.details(email);
+        System.out.println("data>>" + details);
+        return details;
     }
 
     @GetMapping("/register")
-    public String register(){
+    public String register() {
         return "register";
-    }     
-    
-    @GetMapping("/resetPassword")
-    public String resetPassword(){
-        return "resetPassword";
-    } 
-   
-@PostMapping(value = "/insertregister")
-    public String register (@RequestBody String data)
-    {
-        System.out.println("Data>>>>>>"+data);
-        dao.insert(data);
-        return "register";      
     }
 
-        
-            @PostMapping(value = "/verify_login")
-        @ResponseBody
-        public ResponseEntity<?> userdata(@RequestBody String data)
-        {
-            JSONObject json = new JSONObject(data);
-            String f_password = json.getString("password");
-            String username = json.getString("username");
-            System.out.println("f_password>>>>>>>"+ f_password +"f_name>>>>>>>"+username );
-            String passwordDao = dao.verifyLogin(username);
-            System.out.println("f_password>>>>>>>"+ f_password +"f_name>>>>>>>"+username +"Dao_password>>>>>" + passwordDao);
-            if(f_password.equals(passwordDao))
-            {
-                return ResponseEntity.ok("login successfully");
-            }
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("login Error");
-            
+    @GetMapping("/first")
+    public String first() {
+        return "first";
+    }
+
+    @GetMapping("/login")
+
+    public String login() {
+        return "login";
+    }
+
+    @PostMapping(value = "/insertregister")
+    public ResponseEntity<String> register(@RequestBody String data) {
+        JSONObject json = new JSONObject(data);
+
+        String fname = json.getString("fname");
+        // if (fname.length() < 2) {
+        // return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("First name
+        // error....");
+        // }
+
+        String password = json.getString("password");
+        // if (password.length() < 2) {
+        // return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("First name
+        // error....");
+        // }
+
+        dao.insertMethod(data);
+        return ResponseEntity.ok("login successfully");
+    }
+
+    @PostMapping(value = "/verify_login")
+    @ResponseBody
+    public ResponseEntity<?> userdata(@RequestBody String data) {
+
+        JSONObject json = new JSONObject(data);
+        System.out.println("json>>" + json);
+        String f_password = json.getString("password");
+        String email = json.getString("email");
+        System.out.println("emailCOntroller" + email);
+        httpSession.setAttribute("email", email);
+        System.out.println("f_password>>>>>>>" + f_password + "f_name>>>>>>>" + email);
+        String passwordDao = dao.verifyLogin(email);
+        System.out.println("passwordDao" + passwordDao);
+
+        if (f_password.equals(passwordDao)) {
+
+            return ResponseEntity.ok("login successfully");
         }
 
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("login Error");
 
-        //     @PostMapping(value = "/verify_login")
-    //     @ResponseBody
-    //     public ResponseEntity<?> userdata(@RequestBody String data)
-    //     {
-    //         JSONObject json = new JSONObject(data);
-    //         String f_password = json.getString("password");
-    //         String username = json.getString("username");
-    //         System.out.println("f_password>>>>>>>"+ f_password +"f_name>>>>>>>"+username );
-    //         String passwordDao = dao.verifyLogin(username);
-    //         System.out.println("f_password>>>>>>>"+ f_password +"f_name>>>>>>>"+username +"Dao_password>>>>>" + passwordDao);
-    //         if( passwordhashService.verifyPassword(passwordDao, f_password))
-    //         {
-    //             return ResponseEntity.ok("login successfully");
-    //         }
-    //             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("login Error");
-            
-    //     }
-
-    // @PostMapping(value = "/insertregister")
-    // public String register (@RequestBody String data)
-    // {
-    //     System.out.println("Data>>>>>>"+data);
-    //     JSONObject json = new JSONObject(data);
-    //     String password = json.getString("password");
-    //     String hashedPassword = passwordhashService.encodePassword(password);
-    //     json.put("password", hashedPassword);
-    //     System.out.println("CONTROLLER MEIN AAYA HASHE PASSWORD:::::::::::" + json.toString());
-    //     dao.insert(json.toString());
-    //     return "register";      
-    // }
-
-    
-    //     @PostMapping(value = "/verify_login")
-    //     @ResponseBody
-    //     public ResponseEntity<?> userdata(@RequestBody String data)
-    //     {
-    //         JSONObject json = new JSONObject(data);
-    //         String f_password = json.getString("password");
-    //         String username = json.getString("username");
-    //         System.out.println("f_password>>>>>>>"+ f_password +"f_name>>>>>>>"+username );
-    //         String passwordDao = dao.verifyLogin(username);
-    //         System.out.println("f_password>>>>>>>"+ f_password +"f_name>>>>>>>"+username +"Dao_password>>>>>" + passwordDao);
-    //         if( passwordhashService.verifyPassword(passwordDao, f_password))
-    //         {
-    //             return ResponseEntity.ok("login successfully");
-    //         }
-    //             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("login Error");
-            
-    //     }
-
-
-    //     @PostMapping("/send-otp")
-    //     @ResponseBody
-    //     public String  verifyEmail(@RequestBody String data){
-
-    //         System.out.println("INSIDE ::::::::::::::");
-    //         System.out.println("Email ::::::::::::::" + data);
-            
-    //     JSONObject json = new JSONObject(data);
-    //     String emailValue = json.getString("email");
-    //     System.out.println("Json>>>>>"+emailValue);
-    //     int id = dao.resetPassword(data);
-    //     if(id != 0)
-    //     { 
-    //         System.out.println("id>>"+id);     
-    //     int otp = (int) Math.floor(100000 + Math.random() * 900000);
-    //     System.out.println("otp>>>"+otp);
-    //     httpSession.setAttribute("otp", otp);
-    //     int otpFromSession = (int)httpSession.getAttribute("otp");  
-    //     System.out.println("otpsession>>"+otpFromSession);
-    //      userservice.sendEmail("Your Otp for Email Verification is: " + otp, emailValue, 3);
-    //      return "success";
-    //     }
-    //     System.out.println("null>>");
-    //      return "/login";
-    //     }
     }
-        
- 
 
+    @GetMapping(value = "/userdetails")
+    public String userdetails() {
+        return "/userdetails";
+    }
 
+    @ResponseBody
+    @GetMapping(value = "/allDetails")
+    public List<Map<String, Object>> Alldetails() {
+
+        List<Map<String, Object>> allDetails = dao.allDetails();
+        System.out.println("Alldata>>" + allDetails);
+        return allDetails;
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/getCount")
+    public String getCount() {
+        String count = dao.getCount();
+        return count;
+    }
+
+    // Active & Deactive
+    @ResponseBody
+    @PostMapping(value = "/setDeactive")
+    public String setDeactive(@RequestBody String email) {
+        System.out.println("Email : " + email);
+        dao.setDeactive(email);
+        return "Success";
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/setActive")
+    public String setActive(@RequestBody String email) {
+
+        dao.setActive(email);
+        return "Success";
+    }
+}
